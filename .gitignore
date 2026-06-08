@@ -1,0 +1,40 @@
+# ===== Secrets =====
+.env
+
+# ===== ChromaDB (local vector store — regenerated on first run) =====
+chroma_db/
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.so
+
+# ===== Virtual environments =====
+venv/
+env/
+.venv/
+.env/
+
+# ===== HuggingFace model cache =====
+.cache/
+
+# ===== Jupyter =====
+.ipynb_checkpoints/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo

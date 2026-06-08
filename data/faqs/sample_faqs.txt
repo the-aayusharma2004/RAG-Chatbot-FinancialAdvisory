@@ -1,0 +1,35 @@
+Q: How do I open an account?
+A: You can open an account online by visiting our website, clicking 'Open Account', and completing the KYC process with your PAN card, Aadhaar, and bank details. The process takes 10-15 minutes.
+
+Q: What KYC documents are required?
+A: You need a PAN card (mandatory), Aadhaar card or Passport for address proof, a cancelled cheque or bank statement, and a passport-sized photograph.
+
+Q: How long does KYC verification take?
+A: KYC verification typically takes 1-2 business days. You will receive an email confirmation once your account is activated.
+
+Q: Can I have a joint account?
+A: Yes, we support joint accounts with up to 3 holders. The primary holder must complete full KYC and all joint holders must submit their PAN and address proof.
+
+Q: What is the minimum investment amount?
+A: The minimum investment varies by product. SIP starts at Rs.500/month, Lump sum mutual funds at Rs.1000, and Fixed Deposits at Rs.10,000.
+
+Q: How do I withdraw my investments?
+A: Log in to your account, go to 'My Portfolio', select the investment, and click 'Redeem'. Funds are credited to your registered bank account within 2-3 business days for mutual funds, and on maturity for FDs.
+
+Q: Is my investment insured?
+A: Mutual fund investments are not insured or guaranteed by the government. Fixed Deposits up to Rs.5 lakh are insured under DICGC. All investments are subject to market risks.
+
+Q: How do I update my bank account details?
+A: Go to 'Profile Settings' > 'Bank Accounts' and submit a new bank account with a cancelled cheque. Verification takes 24 hours.
+
+Q: What are the tax implications of my investments?
+A: ELSS funds qualify for Rs.1.5 lakh deduction under Section 80C. Equity fund gains held over 1 year are taxed at 10% (LTCG). Debt fund gains are taxed as per your income slab.
+
+Q: How do I contact customer support?
+A: You can reach us via email at support@example.com, call our helpline at 1800-XXX-XXXX (Mon-Sat, 9 AM-6 PM), or use the live chat on our website.
+
+Q: Can I invest on behalf of a minor?
+A: Yes, a guardian can invest on behalf of a minor. The account is held in the minor's name with the guardian as operator until the minor turns 18.
+
+Q: What happens if I miss a SIP installment?
+A: If your bank account has insufficient funds, the SIP installment is skipped for that month. Three consecutive failures may result in SIP cancellation. There is no penalty for a missed installment.
