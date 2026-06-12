@@ -38,3 +38,7 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# ===== Prompts & Instructions =====
+prompt*.md
+prompt.md

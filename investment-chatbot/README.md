@@ -183,6 +183,8 @@ On first run, the app will:
 
 ## Frontend Dashboard
 
+Open `http://localhost:5000` after starting the server.
+
 ### Dashboard Tab
 
 - **Portfolio Overview** — 4 summary cards with total invested, current value, gain/loss
@@ -201,7 +203,7 @@ Four chat modes selectable from the sidebar:
 | Investment Advice | `POST /profile-chat` | Profile-based product recommendations |
 | Portfolio Q&A | `POST /chat` with `user_id` | SQL + RAG hybrid answers |
 
-**Portfolio Analysis** button calls `POST /portfolio-analysis` — combines live MySQL data with RAG investment knowledge for deep personalised advice.
+**Portfolio Analysis** button (gold accent) calls `POST /portfolio-analysis` — combines live MySQL data with RAG investment knowledge for deep personalised advice.
 
 ---
 
@@ -213,14 +215,17 @@ Returns Ollama, RAG, and MySQL health.
 
 ### `POST /chat`
 
-General chat with auto intent detection. Response includes `intent`: `faq | investment | sql | hybrid | general`
+General chat with auto intent detection.
 
 ```json
 {
   "message": "How much have I invested?",
-  "user_id": 1
+  "user_id": 1,
+  "user_profile": { "age": 28, "monthly_income": 60000, "risk_appetite": "medium", "investment_goal": "wealth growth", "investment_horizon": "long", "existing_investments": [] }
 }
 ```
+
+Response includes `intent`: `faq | investment | sql | hybrid | general`
 
 ### `POST /profile-chat`
 
@@ -249,6 +254,10 @@ Returns all financial goals and progress.
 
 Hybrid endpoint — live portfolio data + RAG knowledge → Ollama advice.
 
+```json
+{ "user_id": 1, "message": "Analyze my portfolio and suggest improvements." }
+```
+
 ---
 
 ## Sample Users (seeded automatically)
@@ -261,15 +270,13 @@ Hybrid endpoint — live portfolio data + RAG knowledge → Ollama advice.
 
 ---
 
-## Troubleshooting
+## Extending the Knowledge Base
 
-| Error | Fix |
-|---|---|
-| `Cannot reach Ollama` | Run `ollama serve` in a separate terminal |
-| `model 'llama3' not found` | Run `ollama pull llama3` |
-| `MySQL connection refused` | Ensure MySQL is running and `.env` credentials are correct |
-| `Slow first response` | Normal — model loads into memory on first use |
-| `Re-index documents` | Delete `chroma_db/` folder and restart |
+Drop `.txt` or `.pdf` files into:
+- `data/faqs/` — FAQ content
+- `data/investments/` — product/scheme information
+
+Then delete `chroma_db/` and restart the app. Documents are re-indexed automatically.
 
 ---
 
@@ -282,3 +289,15 @@ OLLAMA_MODEL=mistral   # or phi3, llama3, gemma, etc.
 ```
 
 Pull the model first: `ollama pull mistral`
+
+---
+
+## Troubleshooting
+
+| Error | Fix |
+|---|---|
+| `Cannot reach Ollama` | Run `ollama serve` in a separate terminal |
+| `model 'llama3' not found` | Run `ollama pull llama3` |
+| `MySQL connection refused` | Ensure MySQL is running and `.env` credentials are correct |
+| `Slow first response` | Normal — model loads into memory on first use |
+| `Re-index documents` | Delete `chroma_db/` folder and restart |

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestAI — Personal Wealth Portfolio Dashboard & Advisor</title>
+  <meta name="description" content="AI-powered personal investment advisor and FAQ assistant. Monitor live portfolio metrics, track financial goals, and consult our Ollama-backed chatbot." />
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- App Shell -->
+  <div class="app-shell">
+    
+    <!-- ===== TOPBAR HEADER ===== -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <!-- Collapsible Sidebar Toggle -->
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar Navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="logo">
+          <div class="logo-icon">💎</div>
+          <span class="logo-name">InvestAI</span>
+          <span class="logo-tag">Advisor</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Centralized) -->
+      <div class="topbar-nav">
+        <button id="tab-dashboard" class="nav-tab active" onclick="switchTab('dashboard')">
+          <span class="nav-icon">📊</span> Dashboard
+        </button>
+        <button id="tab-chat" class="nav-tab" onclick="switchTab('chat')">
+          <span class="nav-icon">🤖</span> AI Advisor
+        </button>
+      </div>
+      
+      <div class="topbar-right">
+        <!-- User Switcher Dropdown -->
+        <div class="user-selector">
+          <span class="user-label">Client Profile:</span>
+          <select id="user-select" class="user-select" onchange="onUserChange()">
+            <option value="1" selected>Arjun Sharma (ID: 1)</option>
+            <option value="2">Priya Nair (ID: 2)</option>
+            <option value="3">Rohit Verma (ID: 3)</option>
+          </select>
+        </div>
+        
+        <!-- Live System Status Pills -->
+        <button class="status-pill" onclick="openStatusModal()" title="View system connection details">
+          <span id="status-dot" class="status-dot"></span>
+          <span id="status-text">Checking status...</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== MAIN SHELL BODY ===== -->
+    <div class="app-body">
+      
+      <!-- ===== COLLAPSIBLE SIDEBAR ===== -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+          
+          <!-- Navigation Section (Only relative to active tab) -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">Dashboard Nav</div>
+            <div class="sidebar-nav">
+              <button id="sl-overview" class="sidebar-link active" onclick="scrollToSection('overview')">
+                💼 Portfolio Overview
+              </button>
+              <button id="sl-holdings" class="sidebar-link" onclick="scrollToSection('holdings')">
+                📈 Asset Allocation
+              </button>
+              <button id="sl-goals" class="sidebar-link" onclick="scrollToSection('goals')">
+                🎯 Financial Goals
+              </button>
+              <button id="sl-transactions" class="sidebar-link" onclick="scrollToSection('transactions')">
+                🧾 Recent Ledger
+              </button>
+            </div>
+          </div>
+          
+          <div class="sidebar-divider"></div>
+          
+          <!-- Quick Chat Starters Section -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">Quick Actions</div>
+            <div class="quick-actions">
+              <button class="qa-btn" onclick="switchTabAndAsk('chat', 'Analyze my portfolio suitability.')">
+                <span class="qa-icon">🔍</span>
+                <div class="qa-text">
+                  <span class="qa-title">Suitability Review</span>
+                  <span class="qa-desc">Check asset risk</span>
+                </div>
+              </button>
+              <button class="qa-btn" onclick="switchTabAndAsk('chat', 'What are the tax benefits of ELSS?')">
+                <span class="qa-icon">💰</span>
+                <div class="qa-text">
+                  <span class="qa-title">Tax Saving Advice</span>
+                  <span class="qa-desc">80C & ELSS details</span>
+                </div>
+              </button>
+              <button class="qa-btn" onclick="switchTabAndAsk('chat', 'What KYC documents are required?')">
+                <span class="qa-icon">📄</span>
+                <div class="qa-text">
+                  <span class="qa-title">KYC Guidelines</span>
+                  <span class="qa-desc">Document requirements</span>
+                </div>
+              </button>
+            </div>
+          </div>
+          
+          <div class="sidebar-divider"></div>
+          
+          <!-- Mini Status Section -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">System Engines</div>
+            <div class="sys-status-mini">
+              <div class="sys-row">
+                <span id="dot-ollama" class="sys-dot"></span>
+                <span class="sys-name">Ollama LLM</span>
+                <span id="val-ollama" class="sys-val">checking</span>
+              </div>
+              <div class="sys-row">
+                <span id="dot-db" class="sys-dot"></span>
+                <span class="sys-name">MySQL Database</span>
+                <span id="val-db" class="sys-val">checking</span>
+              </div>
+              <div class="sys-row">
+                <span id="dot-rag" class="sys-dot"></span>
+                <span class="sys-name">Chroma RAG</span>
+                <span id="val-rag" class="sys-val">checking</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="sidebar-divider"></div>
+          
+          <!-- Large Portfolio suitablity analysis trigger -->
+          <div class="analysis-panel">
+            <button class="analysis-btn" onclick="triggerPortfolioAnalysis()">
+              ⚡ Portfolio Analysis
+            </button>
+            <div class="analysis-desc">
+              Generate detailed personalized suitability recommendations report via SQL + RAG hybrid search.
+            </div>
+          </div>
+          
+        </div>
+      </aside>
+
+      <!-- ===== MAIN PANEL AREA ===== -->
+      <main class="content-area">
+        
+        <!-- ==================== TAB 1: DASHBOARD ==================== -->
+        <div id="panel-dashboard" class="tab-panel active">
+          
+          <!-- Overview Summary section -->
+          <div id="overview" class="dash-section">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Client Investment Portfolio</h2>
+                <div id="portfolio-sub" class="section-sub">Portfolio for Arjun Sharma</div>
+              </div>
+              <button class="refresh-btn" onclick="loadDashboard()" aria-label="Refresh Dashboard data">🔄</button>
+            </div>
+            
+            <div class="summary-grid">
+              <div class="sum-card">
+                <div class="sum-card-icon">💵</div>
+                <div class="sum-card-body">
+                  <span class="sum-card-label">Total Invested</span>
+                  <span id="val-invested" class="sum-card-value">₹0</span>
+                </div>
+              </div>
+              <div class="sum-card">
+                <div class="sum-card-icon">📈</div>
+                <div class="sum-card-body">
+                  <span class="sum-card-label">Current Value</span>
+                  <span id="val-current" class="sum-card-value">₹0</span>
+                </div>
+              </div>
+              <div class="sum-card">
+                <div class="sum-card-icon">📊</div>
+                <div class="sum-card-body">
+                  <span class="sum-card-label">Total Returns</span>
+                  <span id="val-gain" class="sum-card-value">₹0</span>
+                  <span id="val-gain-pct" class="sum-card-pct">+0%</span>
+                </div>
+              </div>
+              <div class="sum-card">
+                <div class="sum-card-icon">📂</div>
+                <div class="sum-card-body">
+                  <span class="sum-card-label">Positions Count</span>
+                  <span id="val-holdings" class="sum-card-value">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Holdings Breakdown section -->
+          <div id="holdings" class="dash-section">
+            <div class="section-header">
+              <h2 class="section-title">Asset Allocation Holdings</h2>
+              <div class="section-sub">Detailed investment asset structures in catalog</div>
+            </div>
+            <div id="holdings-list" class="holdings-list">
+              <div class="tx-loading">Loading asset breakdown...</div>
+            </div>
+          </div>
+
+          <!-- Financial Goals section -->
+          <div id="goals" class="dash-section">
+            <div class="section-header">
+              <h2 class="section-title">Target Goal Progress</h2>
+              <div class="section-sub">Monitor live accumulation percentages toward targets</div>
+            </div>
+            <div id="goals-grid" class="goals-grid">
+              <div class="tx-loading">Loading target data...</div>
+            </div>
+          </div>
+
+          <!-- Recent Transaction History Ledger section -->
+          <div id="transactions" class="dash-section">
+            <div class="section-header">
+              <h2 class="section-title">Ledger Transaction History</h2>
+              <div class="section-sub">Recent portfolio cash flow logs</div>
+            </div>
+            <div class="tx-table-wrap">
+              <table class="tx-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="tx-tbody">
+                  <tr>
+                    <td colspan="4" class="tx-loading">Loading ledger logs...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 2: AI CHAT ==================== -->
+        <div id="panel-chat" class="tab-panel">
+          <div class="chat-layout">
+            
+            <!-- Chat sidebar parameter toggler -->
+            <div class="chat-sidebar">
+              <div class="chat-mode-section">
+                <div class="sidebar-label">Chat Assistant Mode</div>
+                <div class="chat-modes">
+                  <button id="cmode-general" class="cmode-btn active" onclick="setChatMode('general')">
+                    <div class="cmode-icon general">💬</div>
+                    <div class="cmode-body">
+                      <span class="cmode-title">General Advisor</span>
+                      <span class="cmode-desc">Auto-routing queries</span>
+                    </div>
+                  </button>
+                  <button id="cmode-faq" class="cmode-btn" onclick="setChatMode('faq')">
+                    <div class="cmode-icon faq">❓</div>
+                    <div class="cmode-body">
+                      <span class="cmode-title">FAQ Lookup</span>
+                      <span class="cmode-desc">KYC, account opening</span>
+                    </div>
+                  </button>
+                  <button id="cmode-invest" class="cmode-btn" onclick="setChatMode('invest')">
+                    <div class="cmode-icon invest">📈</div>
+                    <div class="cmode-body">
+                      <span class="cmode-title">Invest Suggestion</span>
+                      <span class="cmode-desc">Profile recommendation</span>
+                    </div>
+                  </button>
+                  <button id="cmode-portfolio" class="cmode-btn" onclick="setChatMode('portfolio')">
+                    <div class="cmode-icon portfolio">👤</div>
+                    <div class="cmode-body">
+                      <span class="cmode-title">Portfolio Q&A</span>
+                      <span class="cmode-desc">Ask details about user</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div class="sidebar-divider"></div>
+
+              <!-- Custom Profile Info Form (visible in invest mode) -->
+              <div id="chat-profile-form" class="chat-profile-form">
+                <div class="sidebar-label">User Custom Profile</div>
+                
+                <div class="form-group">
+                  <label class="form-label" for="p-age">Age</label>
+                  <input id="p-age" class="form-control" type="number" placeholder="e.g. 28" min="18" max="100">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p-income">Monthly Income (₹)</label>
+                  <input id="p-income" class="form-control" type="number" placeholder="e.g. 60000" min="0">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p-risk">Risk Tolerance</label>
+                  <select id="p-risk" class="form-control">
+                    <option value="low">Low — Capital preservation</option>
+                    <option value="medium" selected>Medium — Balanced growth</option>
+                    <option value="high">High — Volatility tolerant</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p-goal">Investment Target</label>
+                  <select id="p-goal" class="form-control">
+                    <option value="wealth growth" selected>Wealth Growth</option>
+                    <option value="retirement">Retirement</option>
+                    <option value="child education">Child Education</option>
+                    <option value="tax saving">Tax Saving</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p-horizon">Investment Horizon</label>
+                  <select id="p-horizon" class="form-control">
+                    <option value="short">Short term (&lt;3 years)</option>
+                    <option value="medium" selected>Medium term (3-7 years)</option>
+                    <option value="long">Long term (7+ years)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Active Schemes</label>
+                  <div id="tag-wrapper" class="tag-input-wrapper">
+                    <input id="tag-input" class="tag-raw-input" placeholder="e.g. PPF, SIP">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Suggested prompts -->
+              <div class="chat-starters">
+                <div class="sidebar-label">Suggested Queries</div>
+                <div id="starter-list" class="starter-list">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat main terminal console -->
+            <div class="chat-main">
+              <div class="chat-banner">
+                <div id="chat-banner-title" class="chat-banner-title">InvestAI — Smart Financial Assistant</div>
+                <div id="chat-banner-desc" class="chat-banner-desc">Ask anything — intent is detected automatically.</div>
+              </div>
+              
+              <div id="messages-list" class="messages-list">
+                <!-- Welcome UI -->
+                <div id="welcome-state" class="welcome-state">
+                  <div class="welcome-icon">🤖</div>
+                  <h2>Consult Your Advisor Chatbot</h2>
+                  <p>Submit custom prompts or click starter cards. The agent matches queries against vector rules and SQL profiles.</p>
+                  
+                  <div class="feature-grid">
+                    <div class="feat-card">
+                      <div class="feat-icon">❓</div>
+                      <div class="feat-title">FAQ Lookup</div>
+                      <div class="feat-desc">Docs, terms, policies, accounts</div>
+                    </div>
+                    <div class="feat-card">
+                      <div class="feat-icon">📈</div>
+                      <div class="feat-title">Asset Advice</div>
+                      <div class="feat-desc">Product listings & allocations</div>
+                    </div>
+                    <div class="feat-card">
+                      <div class="feat-icon">📊</div>
+                      <div class="feat-title">Database Sync</div>
+                      <div class="feat-desc">User holdings & transaction counts</div>
+                    </div>
+                    <div class="feat-card">
+                      <div class="feat-icon">⚡</div>
+                      <div class="feat-title">Portfolio Analysis</div>
+                      <div class="feat-desc">Full SQL + RAG advisory reviews</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input bar -->
+              <div class="chat-input-bar">
+                <div class="chat-input-wrapper">
+                  <textarea id="message-input" placeholder="Ask about KYC, accounts, withdrawals, tax savings..." rows="1" aria-label="Query text entry"></textarea>
+                  <button id="send-btn" class="send-message-btn" onclick="sendMessage()" aria-label="Submit prompt">➤</button>
+                </div>
+                <div class="input-disclaimer">
+                  Local LLM Generation (Ollama) • Chroma Vector DB • SQL Ledger Database
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+  </div>
+
+  <!-- ===== SYSTEM Health check status MODAL ===== -->
+  <div class="modal-backdrop" id="status-modal" onclick="closeStatusModal(event)">
+    <div class="status-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>System Health Diagnostics</h3>
+        <button class="modal-close-icon" onclick="closeStatusModal()">✕</button>
+      </div>
+      
+      <div class="modal-content-list">
+        <div class="modal-status-item">
+          <span class="modal-status-key">Ollama Service Status</span>
+          <span class="modal-status-val" id="sm-ollama">Loading...</span>
+        </div>
+        <div class="modal-status-item">
+          <span class="modal-status-key">Active Ollama Model</span>
+          <span class="modal-status-val" id="sm-model">—</span>
+        </div>
+        <div class="modal-status-item">
+          <span class="modal-status-key">MySQL Database Link</span>
+          <span class="modal-status-val" id="sm-db">Loading...</span>
+        </div>
+        <div class="modal-status-item">
+          <span class="modal-status-key">ChromaDB RAG Indexer</span>
+          <span class="modal-status-val" id="sm-rag">Loading...</span>
+        </div>
+        <div class="modal-status-item" style="border-bottom:none; padding-bottom:0; flex-direction:column; align-items:flex-start; gap:6px;">
+          <span class="modal-status-key">Available Ollama Models</span>
+          <span class="modal-status-val" id="sm-models" style="font-weight:500; font-size:0.8rem; text-align:left; word-break:break-all;">—</span>
+        </div>
+      </div>
+      
+      <button class="modal-btn-confirm" onclick="closeStatusModal()">Dismiss Details</button>
+    </div>
+  </div>
+
+  <!-- ===== AI PORTFOLIO ANALYSIS REPORT MODAL ===== -->
+  <div class="modal-backdrop" id="analysis-modal" onclick="closeAnalysisModal(event)">
+    <div class="status-modal" style="max-width: 680px; width: 95%;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Certified AI Portfolio Suitability Report</h3>
+        <button class="modal-close-icon" onclick="closeAnalysisModal()">✕</button>
+      </div>
+      
+      <div class="modal-content-list" style="max-height: 450px; overflow-y: auto; padding-right: 8px;">
+        <div id="analysis-result">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      
+      <button class="modal-btn-confirm" onclick="closeAnalysisModal()">Close Report</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Controller -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
